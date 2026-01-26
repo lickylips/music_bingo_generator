@@ -1,0 +1,15 @@
+# Local environment
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE and Agent files
+.gemini/
+.gemini*
+.DS_Store
+
+# User-specific run scripts
+run_app.sh
