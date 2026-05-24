@@ -1,15 +1,17 @@
-# Music Bingo App
+# Music Bingo Monorepo
 
-A tool to generate printable music bingo sheets from digital playlists (local .m3u or YouTube Music).
+This repository contains the source code for the Music Bingo application.
 
-## Features
-- **Input:** Local `.m3u` files or YouTube Music playlist URLs.
-- **Output:** Printable PDF with randomized 5x5 bingo cards.
-- **Layout:** 2 cards per A4 page.
-- **Uniqueness:** Guarantees unique cards.
+## Structure
 
-## Setup
-1. Create a virtual environment: `python3 -m venv venv`
-2. Activate it: `source venv/bin/activate` (Linux/Mac) or `venv\Scripts\activate` (Windows)
-3. Install dependencies: `pip install -r requirements.txt`
-4. Run the app: `streamlit run src/app.py`
+*   **`mobile-app/`**: The main React Native mobile application (Android/iOS).
+*   **`prototype-python/`**: The original Python/Streamlit prototype used for verifying logic.
+*   **`docs/`**: Project documentation and design notes.
+
+## Getting Started
+
+### Mobile App
+Navigate to `mobile-app/` and follow the instructions in the README there.
+
+### Python Prototype
+Navigate to `prototype-python/` to run the streamlit version.

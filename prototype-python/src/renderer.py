@@ -7,12 +7,13 @@ from reportlab.lib.enums import TA_CENTER
 import io
 
 class PDFRenderer:
-    def render_to_bytes(self, cards, title="Music Bingo", include_artist=True):
+    def render_to_bytes(self, cards, title="Music Bingo", include_artist=True, jackpot=False):
         """
         Renders cards to a PDF in memory.
         cards: list of 5x5 grids.
         title: Title to display on each sheet.
         include_artist: Whether to print artist name below title.
+        jackpot: Whether Jackpot mode is active (no FREE SPACE in center).
         Returns: BytesIO object containing PDF data.
         """
         buffer = io.BytesIO()
@@ -58,17 +59,19 @@ class PDFRenderer:
         row_height = 2.4 * cm 
         
         # Grid Style
-        grid_style = TableStyle([
+        grid_style_list = [
             ('GRID', (0,0), (-1,-1), 1, colors.black),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-            ('BACKGROUND', (2,2), (2,2), colors.lightgrey), # Free Space
             # Padding
             ('LEFTPADDING', (0,0), (-1,-1), 2),
             ('RIGHTPADDING', (0,0), (-1,-1), 2),
             ('TOPPADDING', (0,0), (-1,-1), 2),
             ('BOTTOMPADDING', (0,0), (-1,-1), 2),
-        ])
+        ]
+        if not jackpot:
+            grid_style_list.append(('BACKGROUND', (2,2), (2,2), colors.lightgrey)) # Free Space
+        grid_style = TableStyle(grid_style_list)
 
         # Title Box Style
         title_box_style = TableStyle([
@@ -113,7 +116,7 @@ class PDFRenderer:
                         f_size = 8
                     
                     # Free Space Check
-                    if raw_title == "FREE SPACE":
+                    if not jackpot and raw_title == "FREE SPACE":
                         f_size = 14
                         display_text = f"<b>{raw_title}</b>"
                     else:

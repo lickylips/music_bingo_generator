@@ -1,15 +1,15 @@
-# Local environment
-venv/
-.venv/
-env/
-__pycache__/
-*.py[cod]
-*$py.class
-
-# IDE and Agent files
+# Global ignores
+.DS_Store
 .gemini/
 .gemini*
-.DS_Store
+.antigravitycli/
 
-# User-specific run scripts
-run_app.sh
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Mobile
+.expo/
+dist/
+web-build/

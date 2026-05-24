@@ -65,6 +65,7 @@ def main():
 
     game_title = st.sidebar.text_input("Game Title", value=default_title)
     include_artist = st.sidebar.checkbox("Include Artist Names", value=True)
+    jackpot = st.sidebar.checkbox("Jackpot Mode (No Free Space)", value=False)
 
     # -- Main Area --
     if playlist_data:
@@ -87,10 +88,10 @@ def main():
             try:
                 with st.spinner("Generating Bingo Cards..."):
                     # 1. Generate Grids
-                    cards = generator.generate_cards(playlist_data, num_cards)
+                    cards = generator.generate_cards(playlist_data, num_cards, jackpot=jackpot)
                     
                     # 2. Render PDF
-                    pdf_buffer = renderer.render_to_bytes(cards, title=game_title, include_artist=include_artist)
+                    pdf_buffer = renderer.render_to_bytes(cards, title=game_title, include_artist=include_artist, jackpot=jackpot)
                     
                     # 3. Success & Download
                     st.success(f"Successfully generated {num_cards} cards on {num_pages} pages!")
