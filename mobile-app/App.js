@@ -184,6 +184,8 @@ export default function App() {
     let paddingSize = '8px';
 
     const count = parseInt(cardsPerSheet);
+    const pageOrientation = (count === 1 || count === 4) ? 'landscape' : 'portrait';
+
     if (count === 1) {
       headerFontSize = '24px';
       cellFontSize = '14px';
@@ -212,7 +214,7 @@ export default function App() {
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
           <style>
             @page { 
-              size: ${pageSize}; 
+              size: ${pageSize} ${pageOrientation}; 
               margin: 0; 
             }
             body { 
@@ -227,9 +229,9 @@ export default function App() {
               height: 100vh;
               box-sizing: border-box;
               page-break-after: always;
-              padding: 15mm;
+              padding: 6mm;
               display: grid;
-              gap: 10mm;
+              gap: 4mm;
             }
             .sheet-1 {
               grid-template-columns: 1fr;
