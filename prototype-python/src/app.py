@@ -4,10 +4,212 @@ from playlist_parser import PlaylistParser
 from generator import BingoGenerator
 from renderer import PDFRenderer
 
+def inject_premium_styles():
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        /* Global Font Override */
+        html, body, [class*="css"], [class*="st-"] {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Custom app header hero banner */
+        .hero-container {
+            background: linear-gradient(135deg, #1f0c33 0%, #0c0414 100%);
+            padding: 2.2rem;
+            border-radius: 1.2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(127, 0, 255, 0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #FF007F, #7F00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.05rem;
+            opacity: 0.85;
+            font-weight: 300;
+        }
+
+        /* Sidebar Custom Glassmorphism styling */
+        [data-testid="stSidebar"] {
+            background-color: #08030d !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+            padding-top: 1rem;
+        }
+
+        /* Frosted container card styling for sidebar inputs */
+        div.row-widget.stRadio, div.row-widget.stNumberInput, div.row-widget.stTextInput, div.row-widget.stCheckbox {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.04) !important;
+            padding: 1.1rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 1.1rem !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.3s ease !important;
+        }
+        div.row-widget.stRadio:hover, div.row-widget.stNumberInput:hover, div.row-widget.stTextInput:hover {
+            border-color: rgba(127, 0, 255, 0.25) !important;
+            box-shadow: 0 4px 14px rgba(127, 0, 255, 0.08) !important;
+        }
+
+        /* Primary Button Styling */
+        div.stButton > button:first-child {
+            background: linear-gradient(135deg, #7F00FF 0%, #FF007F 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.6rem 2rem !important;
+            border-radius: 0.8rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 4px 15px rgba(127, 0, 255, 0.3) !important;
+            transition: all 0.3s ease !important;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        div.stButton > button:first-child:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(255, 0, 127, 0.4) !important;
+        }
+        div.stButton > button:first-child:active {
+            transform: translateY(1px) !important;
+        }
+
+        /* Download Button CTA with Pulse */
+        div.stDownloadButton > button:first-child {
+            background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.8rem 2.8rem !important;
+            border-radius: 0.8rem !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            box-shadow: 0 4px 18px rgba(0, 114, 255, 0.45) !important;
+            transition: all 0.3s ease !important;
+            animation: pulse 2s infinite;
+            text-align: center;
+            display: block;
+            margin: 1.5rem auto !important;
+        }
+        div.stDownloadButton > button:first-child:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 25px rgba(0, 198, 255, 0.55) !important;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 114, 255, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 14px rgba(0, 114, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 114, 255, 0);
+            }
+        }
+
+        /* Playlist preview container cards */
+        .song-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .song-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .song-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(127, 0, 255, 0.2);
+            transform: translateX(4px);
+        }
+        .song-index {
+            background: linear-gradient(135deg, #7F00FF, #FF007F);
+            color: white;
+            font-weight: 600;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        .song-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .song-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .song-artist {
+            font-size: 0.78rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .song-artist-badge {
+            background: rgba(127, 0, 255, 0.12);
+            color: #b886ff;
+            padding: 0.05rem 0.35rem;
+            border-radius: 0.3rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 def main():
     st.set_page_config(page_title="Music Bingo Generator", page_icon="🎵")
-    st.title("🎵 Music Bingo Generator")
-    st.markdown("Generate printable PDF bingo sheets from your playlists.")
+    inject_premium_styles()
+
+    # Premium Hero Header
+    st.markdown("""
+        <div class="hero-container">
+            <div class="hero-title">🎵 Music Bingo Generator</div>
+            <div class="hero-subtitle">Instantly generate professional, randomized, print-ready PDF bingo cards from your playlists</div>
+        </div>
+    """, unsafe_allow_html=True)
 
     # -- Sidebar Configuration --
     st.sidebar.header("Configuration")
@@ -73,12 +275,25 @@ def main():
 
     # -- Main Area --
     if playlist_data:
-        st.subheader("Preview Songs")
-        with st.expander("Show Song List"):
-            for s in playlist_data[:10]:
-                st.text(f"{s['title']} - {s['artist']}")
-            if len(playlist_data) > 10:
-                st.text(f"... and {len(playlist_data)-10} more.")
+        st.subheader("✨ Preview Loaded Tracks")
+        with st.expander("Show Song List Preview", expanded=True):
+            song_cards_html = '<div class="song-grid">'
+            for idx, s in enumerate(playlist_data[:12]):
+                artist_badge = f'<span class="song-artist-badge">{s["artist"]}</span>' if s["artist"] else ''
+                song_cards_html += f"""
+                    <div class="song-card">
+                        <div class="song-index">{idx + 1}</div>
+                        <div class="song-info">
+                            <div class="song-title" title="{s['title']}">{s['title']}</div>
+                            <div class="song-artist">{s['artist'] if s['artist'] else 'No Artist'} {artist_badge}</div>
+                        </div>
+                    </div>
+                """
+            song_cards_html += '</div>'
+            st.markdown(song_cards_html, unsafe_allow_html=True)
+            
+            if len(playlist_data) > 12:
+                st.markdown(f"<div style='text-align: center; color: #888; margin-top: 5px; margin-bottom: 10px; font-weight: 500;'>... and {len(playlist_data)-12} more songs in the playlist.</div>", unsafe_allow_html=True)
 
         generate_btn = st.button("Generate Bingo Sheets", type="primary")
         
