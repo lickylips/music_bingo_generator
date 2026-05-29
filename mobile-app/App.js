@@ -41,12 +41,16 @@ export default function App() {
   };
 
   const theme = {
-    background: isDarkMode ? '#121212' : '#fff',
-    text: isDarkMode ? '#eee' : '#000',
-    container: isDarkMode ? '#1e1e1e' : '#f5f5f5',
-    inputBackground: isDarkMode ? '#333' : '#fff',
-    border: isDarkMode ? '#444' : '#ccc',
-    placeholder: isDarkMode ? '#888' : '#666'
+    background: isDarkMode ? '#0c0414' : '#fcfaff',
+    text: isDarkMode ? '#ffffff' : '#1f0c33',
+    container: isDarkMode ? '#170d24' : '#f4ebff',
+    inputBackground: isDarkMode ? 'rgba(255, 255, 255, 0.04)' : '#ffffff',
+    border: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#e0d5f0',
+    placeholder: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : '#8b7a9f',
+    cardBackground: isDarkMode ? 'rgba(255, 255, 255, 0.02)' : '#ffffff',
+    cardBorder: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#e9e0f5',
+    accent: '#7F00FF',
+    accentSecondary: '#FF007F'
   };
 
   const pickDocument = async () => {
@@ -309,182 +313,226 @@ export default function App() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: theme.text }]}>Music Bingo Generator</Text>
-        
-        {/* YouTube Section */}
-        <View style={styles.inputContainer}>
-           <Text style={[styles.label, { color: theme.text }]}>YouTube Playlist URL:</Text>
-           <View style={styles.rowContainer}>
-             <TextInput
-               style={[styles.input, { flex: 1, marginRight: 10, width: 'auto', backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
-               placeholder="https://music.youtube.com/..."
-               placeholderTextColor={theme.placeholder}
-               value={ytUrl}
-               onChangeText={setYtUrl}
-               autoCapitalize="none"
-               autoCorrect={false}
-             />
-             <Button 
-               title={isLoading ? "..." : "Load"} 
-               onPress={handleYoutubeLoad} 
-               disabled={isLoading}
-             />
-           </View>
-        </View>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={styles.content}>
+          
+          {/* Hero Card Banner */}
+          <View style={[styles.heroCard, { backgroundColor: isDarkMode ? '#1d0c30' : '#f3ebff', borderColor: isDarkMode ? 'rgba(255,255,255,0.06)' : '#e4d3ff' }]}>
+            <Text style={[styles.heroTitle, { color: isDarkMode ? '#fff' : '#4a0c80' }]}>🎵 Music Bingo</Text>
+            <Text style={[styles.heroSubtitle, { color: isDarkMode ? 'rgba(255,255,255,0.7)' : '#6a2da8' }]}>
+              Instantly generate professional, randomized, print-ready PDF bingo cards from your playlists
+            </Text>
+          </View>
+          
+          {/* YouTube Section */}
+          <View style={styles.inputContainer}>
+             <Text style={[styles.label, { color: theme.text }]}>YouTube Playlist URL:</Text>
+             <View style={styles.rowContainer}>
+               <TextInput
+                 style={[styles.input, { flex: 1, marginRight: 10, width: 'auto', backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
+                 placeholder="https://music.youtube.com/..."
+                 placeholderTextColor={theme.placeholder}
+                 value={ytUrl}
+                 onChangeText={setYtUrl}
+                 autoCapitalize="none"
+                 autoCorrect={false}
+               />
+               <Button 
+                 title={isLoading ? "..." : "Load"} 
+                 onPress={handleYoutubeLoad} 
+                 disabled={isLoading}
+               />
+             </View>
+          </View>
+  
+          <Text style={[styles.orText, { color: theme.placeholder }]}>- OR -</Text>
+  
+          {/* File Picker Section */}
+          <View style={styles.buttonContainer}>
+            <Button title="Select Playlist File (.m3u/.wpl)" onPress={pickDocument} />
+          </View>
+  
+          <Text style={[styles.stats, { color: theme.text }]}>
+            {songs.length > 0 ? `Loaded ${songs.length} songs` : 'No playlist loaded'}
+          </Text>
 
-        <Text style={[styles.orText, { color: theme.placeholder }]}>- OR -</Text>
-
-        {/* File Picker Section */}
-        <View style={styles.buttonContainer}>
-          <Button title="Select Playlist File (.m3u/.wpl)" onPress={pickDocument} />
-        </View>
-
-        <Text style={[styles.stats, { color: theme.text }]}>
-          {songs.length > 0 ? `${songs.length} songs loaded` : 'No playlist loaded'}
-        </Text>
-
-        <View style={[styles.settingsContainer, { backgroundColor: theme.container }]}>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Playlist Name:</Text>
-              <TextInput
-                style={[styles.input, { width: 180, backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
-                value={playlistName}
-                onChangeText={setPlaylistName}
-              />
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Title Suffix:</Text>
-              <TextInput
-                style={[styles.input, { width: 180, backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
-                value={suffix}
-                onChangeText={setSuffix}
-              />
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Page Size:</Text>
-              <View style={styles.pillContainer}>
-                {['A3', 'A4', 'A5', 'Letter', 'Legal'].map((size) => {
-                  const isSelected = pageSize === size;
-                  return (
-                    <TouchableOpacity
-                      key={size}
-                      style={[
-                        styles.pill,
-                        { backgroundColor: isSelected ? '#007AFF' : theme.inputBackground, borderColor: theme.border }
-                      ]}
-                      onPress={() => {
-                        setPageSize(size);
-                        const allowed = getCardsPerSheetOptions(size);
-                        if (!allowed.includes(cardsPerSheet)) {
-                          setCardsPerSheet(allowed[allowed.length - 1]);
-                        }
-                      }}
-                    >
-                      <Text style={[styles.pillText, { color: isSelected ? '#fff' : theme.text }]}>{size}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Cards per Sheet:</Text>
-              <View style={styles.pillContainer}>
-                {getCardsPerSheetOptions(pageSize).map((num) => {
-                  const isSelected = cardsPerSheet === num;
-                  return (
-                    <TouchableOpacity
-                      key={num}
-                      style={[
-                        styles.pill,
-                        { backgroundColor: isSelected ? '#007AFF' : theme.inputBackground, borderColor: theme.border }
-                      ]}
-                      onPress={() => setCardsPerSheet(num)}
-                    >
-                      <Text style={[styles.pillText, { color: isSelected ? '#fff' : theme.text }]}>{num}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Number of Cards:</Text>
-              <TextInput
-                style={[styles.numberInput, { backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
-                value={numCards}
-                onChangeText={setNumCards}
-                keyboardType="numeric"
-              />
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Show Artist:</Text>
-              <Switch
-                value={showArtist}
-                onValueChange={setShowArtist}
-              />
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Jackpot Mode:</Text>
-              <Switch
-                value={jackpot}
-                onValueChange={setJackpot}
-              />
-           </View>
-           <View style={styles.settingRow}>
-              <Text style={{ color: theme.text }}>Dark Mode:</Text>
-              <Switch
-                value={isDarkMode}
-                onValueChange={setIsDarkMode}
-              />
-           </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <Button 
-            title="Generate Bingo Cards" 
-            onPress={generateCards} 
-            disabled={songs.length < (jackpot ? 25 : 24)}
-          />
-        </View>
-
-        {cards.length > 0 && (
+          {/* Songs Preview Grid */}
+          {songs.length > 0 && cards.length === 0 && (
+            <View style={[styles.previewCard, { backgroundColor: theme.cardBackground, borderColor: theme.cardBorder }]}>
+              <Text style={[styles.previewTitle, { color: theme.text }]}>✨ Loaded Playlist Preview:</Text>
+              {songs.slice(0, 5).map((song, sIndex) => (
+                <View key={sIndex} style={[styles.songBadge, { backgroundColor: theme.inputBackground, borderColor: theme.border }]}>
+                  <View style={styles.songIndexCircle}>
+                    <Text style={styles.songIndexText}>{sIndex + 1}</Text>
+                  </View>
+                  <View style={styles.songTextContainer}>
+                    <Text style={[styles.songTitleText, { color: theme.text }]} numberOfLines={1}>{song.title}</Text>
+                    <View style={styles.artistRow}>
+                      <Text style={[styles.songArtistText, { color: theme.placeholder }]} numberOfLines={1}>
+                        {song.artist ? song.artist : 'No Artist'}
+                      </Text>
+                      {song.artist ? (
+                        <View style={styles.artistBadge}>
+                          <Text style={styles.artistBadgeText}>Artist</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+              ))}
+              {songs.length > 5 && (
+                <Text style={[styles.moreText, { color: theme.placeholder }]}>... and {songs.length - 5} more songs loaded.</Text>
+              )}
+            </View>
+          )}
+  
+          <View style={[styles.settingsContainer, { backgroundColor: theme.container, borderColor: theme.border }]}>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Playlist Name:</Text>
+                <TextInput
+                  style={[styles.input, { width: 180, backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
+                  value={playlistName}
+                  onChangeText={setPlaylistName}
+                />
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Title Suffix:</Text>
+                <TextInput
+                  style={[styles.input, { width: 180, backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
+                  value={suffix}
+                  onChangeText={setSuffix}
+                />
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Page Size:</Text>
+                <View style={styles.pillContainer}>
+                  {['A3', 'A4', 'A5', 'Letter', 'Legal'].map((size) => {
+                    const isSelected = pageSize === size;
+                    return (
+                      <TouchableOpacity
+                        key={size}
+                        style={[
+                          styles.pill,
+                          { backgroundColor: isSelected ? '#7F00FF' : theme.inputBackground, borderColor: theme.border }
+                        ]}
+                        onPress={() => {
+                          setPageSize(size);
+                          const allowed = getCardsPerSheetOptions(size);
+                          if (!allowed.includes(cardsPerSheet)) {
+                            setCardsPerSheet(allowed[allowed.length - 1]);
+                          }
+                        }}
+                      >
+                        <Text style={[styles.pillText, { color: isSelected ? '#fff' : theme.text }]}>{size}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Cards per Sheet:</Text>
+                <View style={styles.pillContainer}>
+                  {getCardsPerSheetOptions(pageSize).map((num) => {
+                    const isSelected = cardsPerSheet === num;
+                    return (
+                      <TouchableOpacity
+                        key={num}
+                        style={[
+                          styles.pill,
+                          { backgroundColor: isSelected ? '#7F00FF' : theme.inputBackground, borderColor: theme.border }
+                        ]}
+                        onPress={() => setCardsPerSheet(num)}
+                      >
+                        <Text style={[styles.pillText, { color: isSelected ? '#fff' : theme.text }]}>{num}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Number of Cards:</Text>
+                <TextInput
+                  style={[styles.numberInput, { backgroundColor: theme.inputBackground, color: theme.text, borderColor: theme.border }]}
+                  value={numCards}
+                  onChangeText={setNumCards}
+                  keyboardType="numeric"
+                />
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Show Artist:</Text>
+                <Switch
+                  value={showArtist}
+                  onValueChange={setShowArtist}
+                  trackColor={{ true: '#7F00FF' }}
+                />
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Jackpot Mode:</Text>
+                <Switch
+                  value={jackpot}
+                  onValueChange={setJackpot}
+                  trackColor={{ true: '#7F00FF' }}
+                />
+             </View>
+             <View style={styles.settingRow}>
+                <Text style={{ color: theme.text, fontWeight: '500' }}>Dark Mode:</Text>
+                <Switch
+                  value={isDarkMode}
+                  onValueChange={setIsDarkMode}
+                  trackColor={{ true: '#7F00FF' }}
+                />
+             </View>
+          </View>
+  
           <View style={styles.buttonContainer}>
             <Button 
-              title="Save / Share PDF" 
-              onPress={generatePDF} 
+              title="Generate Bingo Cards" 
+              onPress={generateCards} 
+              disabled={songs.length < (jackpot ? 25 : 24)}
+              color="#7F00FF"
             />
           </View>
-        )}
-
-        {cards.length > 0 && (
-          <ScrollView style={[styles.preview, { borderColor: theme.border }]}>
-            <Text style={[styles.previewTitle, { color: theme.text }]}>Preview Card 1:</Text>
-            {cards[0].grid.map((row, rIndex) => (
-              <View key={rIndex} style={styles.row}>
-                {row.map((cell, cIndex) => {
-                  const isFreeSpace = !jackpot && rIndex === 2 && cIndex === 2;
-                  return (
-                    <Text 
-                      key={cIndex} 
-                      style={[
-                        styles.cell, 
-                        { color: theme.text, borderColor: theme.border },
-                        isFreeSpace && { backgroundColor: isDarkMode ? '#333' : '#eee', fontWeight: 'bold' }
-                      ]} 
-                      numberOfLines={2}
-                    >
-                      {cell.title}
-                      {showArtist && cell.artist ? `\n${cell.artist}` : ''}
-                    </Text>
-                  );
-                })}
-              </View>
-            ))}
-          </ScrollView>
-        )}
-        
-        <StatusBar style={isDarkMode ? "light" : "auto"} />
-      </View>
+  
+          {cards.length > 0 && (
+            <View style={styles.buttonContainer}>
+              <Button 
+                title="Save / Share PDF" 
+                onPress={generatePDF} 
+                color="#FF007F"
+              />
+            </View>
+          )}
+  
+          {cards.length > 0 && (
+            <ScrollView style={[styles.preview, { borderColor: theme.border, backgroundColor: theme.cardBackground }]}>
+              <Text style={[styles.previewTitle, { color: theme.text }]}>Preview Card 1:</Text>
+              {cards[0].grid.map((row, rIndex) => (
+                <View key={rIndex} style={styles.row}>
+                  {row.map((cell, cIndex) => {
+                    const isFreeSpace = !jackpot && rIndex === 2 && cIndex === 2;
+                    return (
+                      <Text 
+                        key={cIndex} 
+                        style={[
+                          styles.cell, 
+                          { color: theme.text, borderColor: theme.border },
+                          isFreeSpace && { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(127, 0, 255, 0.1)', fontWeight: 'bold' }
+                        ]} 
+                        numberOfLines={2}
+                      >
+                        {cell.title}
+                        {showArtist && cell.artist ? `\n${cell.artist}` : ''}
+                      </Text>
+                    );
+                  })}
+                </View>
+              ))}
+            </ScrollView>
+          )}
+          
+          <StatusBar style={isDarkMode ? "light" : "auto"} />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -493,25 +541,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   content: {
     flex: 1,
     padding: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  title: {
-    fontSize: 24,
+  heroCard: {
+    width: '100%',
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginVertical: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  heroTitle: {
+    fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 40,
+    marginBottom: 5,
+  },
+  heroSubtitle: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    fontWeight: '300',
   },
   buttonContainer: {
-    marginVertical: 10,
+    marginVertical: 8,
     width: '100%',
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 10,
+    marginVertical: 8,
   },
   rowContainer: {
     flexDirection: 'row',
@@ -519,48 +588,64 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 6,
+    fontSize: 14,
   },
   orText: {
     marginVertical: 10,
+    fontWeight: 'bold',
+    fontSize: 13,
   },
   stats: {
-    marginVertical: 10,
-    fontSize: 16,
+    marginVertical: 8,
+    fontSize: 15,
+    fontWeight: '600',
   },
   settingsContainer: {
     width: '100%',
-    padding: 10,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
     marginVertical: 10,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: 8,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 8,
+    borderRadius: 8,
+    padding: 10,
   },
   numberInput: {
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 5,
-    width: 60,
+    borderRadius: 8,
+    padding: 8,
+    width: 65,
     textAlign: 'center',
   },
+  previewCard: {
+    width: '100%',
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginVertical: 10,
+  },
   preview: {
-    marginTop: 20,
+    marginTop: 15,
     width: '100%',
     maxHeight: 250,
     borderWidth: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   previewTitle: {
     fontWeight: 'bold',
-    padding: 10,
+    padding: 5,
+    fontSize: 14,
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
@@ -570,7 +655,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     borderWidth: 0.5,
     padding: 2,
-    height: 40,
+    height: 42,
     textAlign: 'center',
     textAlignVertical: 'center',
   },
@@ -578,20 +663,76 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
-    flex: 0.7,
+    flex: 0.75,
   },
   pill: {
     borderWidth: 1,
-    borderRadius: 15,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginLeft: 5,
-    marginBottom: 5,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginLeft: 6,
+    marginBottom: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pillText: {
     fontSize: 11,
     fontWeight: 'bold',
+  },
+  songBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginVertical: 4,
+    width: '100%',
+  },
+  songIndexCircle: {
+    backgroundColor: '#7F00FF',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  songIndexText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  songTextContainer: {
+    flex: 1,
+  },
+  songTitleText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  artistRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  songArtistText: {
+    fontSize: 11,
+    marginRight: 6,
+  },
+  artistBadge: {
+    backgroundColor: 'rgba(127, 0, 255, 0.12)',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 4,
+  },
+  artistBadgeText: {
+    color: '#7F00FF',
+    fontSize: 9,
+    fontWeight: 'bold',
+  },
+  moreText: {
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 8,
+    fontWeight: '500',
   },
 });
