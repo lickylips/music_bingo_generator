@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useState } from 'react';
-import { parseM3U } from './src/utils/parser';
+import { parseM3U, parseWPL } from './src/utils/parser';
 import { generateBingoCards } from './src/utils/generator';
 import { fetchYouTubePlaylist, getPlaylistIdFromUrl } from './src/utils/youtube';
 
@@ -63,12 +63,13 @@ export default function App() {
       const fileUri = result.assets[0].uri;
       const fileContent = await FileSystem.readAsStringAsync(fileUri);
       
-      const parsedSongs = parseM3U(fileContent);
+      const fileName = result.assets[0].name || "Playlist";
+      const isWpl = fileName.toLowerCase().endsWith('.wpl');
+      const parsedSongs = isWpl ? parseWPL(fileContent) : parseM3U(fileContent);
       setSongs(parsedSongs);
       setCards([]); // Reset cards on new import
       setYtUrl(''); // Clear URL input to avoid confusion
       
-      const fileName = result.assets[0].name || "M3U Playlist";
       const nameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
       setPlaylistName(nameWithoutExt);
       
@@ -336,7 +337,7 @@ export default function App() {
 
         {/* File Picker Section */}
         <View style={styles.buttonContainer}>
-          <Button title="Select .m3u File" onPress={pickDocument} />
+          <Button title="Select Playlist File (.m3u/.wpl)" onPress={pickDocument} />
         </View>
 
         <Text style={[styles.stats, { color: theme.text }]}>

@@ -11,18 +11,22 @@ def main():
 
     # -- Sidebar Configuration --
     st.sidebar.header("Configuration")
-    source_type = st.sidebar.radio("Select Source", ["Local M3U File", "YouTube Music URL"])
+    source_type = st.sidebar.radio("Select Source", ["Local Playlist (M3U/WPL)", "YouTube Music URL"])
 
     playlist_data = []
     
     # -- Input Handling --
-    if source_type == "Local M3U File":
-        uploaded_file = st.sidebar.file_uploader("Upload .m3u file", type=["m3u", "m3u8"])
+    if "Local" in source_type:
+        uploaded_file = st.sidebar.file_uploader("Upload playlist file", type=["m3u", "m3u8", "wpl"])
         if uploaded_file:
             # Parse immediately to show preview
             string_data = uploaded_file.getvalue().decode("utf-8")
             parser = PlaylistParser()
-            playlist_data = parser.parse_m3u(string_data)
+            if uploaded_file.name.lower().endswith(".wpl"):
+                playlist_data = parser.parse_wpl(string_data)
+            else:
+                playlist_data = parser.parse_m3u(string_data)
+                
             if playlist_data:
                 st.sidebar.success(f"Loaded {len(playlist_data)} songs.")
             else:
@@ -56,7 +60,7 @@ def main():
     default_title = "Music Bingo"
     if 'playlist_name' in st.session_state and st.session_state['playlist_name']:
         default_title = f"Music Bingo - {st.session_state['playlist_name']}"
-    elif source_type == "Local M3U File" and uploaded_file:
+    elif "Local" in source_type and uploaded_file:
         # Simple extraction from filename
         fname = uploaded_file.name
         if "." in fname:

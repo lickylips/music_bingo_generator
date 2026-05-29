@@ -62,3 +62,41 @@ export const parseM3U = (fileContent: string): ParsedSong[] => {
 
   return songs;
 };
+
+/**
+ * Parses content of a WPL file.
+ * Extracts metadata from <media src="..." /> tags using a RegExp.
+ */
+export const parseWPL = (fileContent: string): ParsedSong[] => {
+  const songs: ParsedSong[] = [];
+  
+  // Regex to match <media src="..."/> tags and capture the src attribute
+  const mediaRegex = /<media\s+[^>]*\bsrc=[\"']([^\"']+)[\"']/gi;
+  let match;
+  
+  while ((match = mediaRegex.exec(fileContent)) !== null) {
+    const src = match[1];
+    if (src) {
+      // Normalize backslashes to forward slashes and grab file name
+      const normalized = src.replace(/\\/g, "/");
+      const filename = normalized.split("/").pop();
+      
+      if (filename) {
+        // Remove extension
+        const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+        
+        if (nameWithoutExt.includes(" - ")) {
+          const parts = nameWithoutExt.split(" - ");
+          const artist = parts[0].trim();
+          const title = parts.slice(1).join(" - ").trim();
+          songs.push({ title, artist });
+        } else {
+          songs.push({ title: nameWithoutExt.trim(), artist: "" });
+        }
+      }
+    }
+  }
+  
+  return songs;
+};
+

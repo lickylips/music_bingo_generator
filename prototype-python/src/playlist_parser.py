@@ -79,3 +79,43 @@ class PlaylistParser:
             return [], ""
             
         return songs, playlist_title
+
+    def parse_wpl(self, file_content_str):
+        """
+        Parses content of a WPL (Windows Media Player Playlist) file.
+        Extracts song titles and artists from <media src="..." /> tags.
+        """
+        import xml.etree.ElementTree as ET
+        songs = []
+        try:
+            # Parse XML string
+            root = ET.fromstring(file_content_str)
+            
+            # Locate all <media> elements
+            for media in root.findall(".//media"):
+                src = media.get("src")
+                if not src:
+                    continue
+                    
+                # Normalize path delimiters and get the file name
+                filename = src.replace("\\", "/").split("/")[-1]
+                
+                # Strip file extension
+                if "." in filename:
+                    filename = ".".join(filename.split(".")[:-1])
+                    
+                if filename:
+                    if " - " in filename:
+                        parts = filename.split(" - ", 1)
+                        artist = parts[0].strip()
+                        title = parts[1].strip()
+                    else:
+                        artist = ""
+                        title = filename.strip()
+                        
+                    songs.append({"title": title, "artist": artist})
+        except Exception as e:
+            print(f"Error parsing WPL playlist: {e}")
+            
+        return songs
+

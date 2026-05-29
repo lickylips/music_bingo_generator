@@ -2,7 +2,7 @@
   "expo": {
     "name": "Music Bingo Generator",
     "slug": "mobile-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
         "backgroundColor": "#121212"
       },
       "edgeToEdgeEnabled": true,
-      "package": "net.lickylip.musicBingo"
+      "package": "net.lickylip.musicBingo",
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"
