@@ -9,8 +9,8 @@ def inject_premium_styles():
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
-        /* Global Font Override */
-        html, body, [class*="css"], [class*="st-"] {
+        /* Global Font Override - Targets text elements safely to exclude icons from being broken */
+        html, body, p, h1, h2, h3, h4, h5, h6, label, button, input, select, textarea {
             font-family: 'Outfit', sans-serif !important;
         }
 
@@ -54,7 +54,7 @@ def inject_premium_styles():
         /* Sidebar Custom Glassmorphism styling */
         [data-testid="stSidebar"] {
             background-color: #08030d !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
         }
         [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
             padding-top: 1rem;
@@ -62,17 +62,71 @@ def inject_premium_styles():
 
         /* Frosted container card styling for sidebar inputs */
         div.row-widget.stRadio, div.row-widget.stNumberInput, div.row-widget.stTextInput, div.row-widget.stCheckbox {
-            background: rgba(255, 255, 255, 0.02) !important;
-            border: 1px solid rgba(255, 255, 255, 0.04) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             padding: 1.1rem !important;
             border-radius: 1rem !important;
             margin-bottom: 1.1rem !important;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
             transition: all 0.3s ease !important;
         }
         div.row-widget.stRadio:hover, div.row-widget.stNumberInput:hover, div.row-widget.stTextInput:hover {
-            border-color: rgba(127, 0, 255, 0.25) !important;
-            box-shadow: 0 4px 14px rgba(127, 0, 255, 0.08) !important;
+            border-color: rgba(255, 0, 127, 0.4) !important;
+            box-shadow: 0 4px 14px rgba(255, 0, 127, 0.12) !important;
+        }
+
+        /* Premium Custom File Uploader container cards */
+        [data-testid="stFileUploader"] {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding: 1.1rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 1.1rem !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+        }
+        [data-testid="stFileUploader"] section {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+            border-radius: 0.8rem !important;
+            padding: 1rem !important;
+        }
+        [data-testid="stFileUploader"] button {
+            background: linear-gradient(135deg, #7F00FF 0%, #FF007F 100%) !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 0.6rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(127, 0, 255, 0.2) !important;
+            transition: all 0.3s ease !important;
+        }
+        [data-testid="stFileUploader"] button:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 14px rgba(255, 0, 127, 0.3) !important;
+            border: none !important;
+        }
+
+        /* Ensure high contrast text inside the file uploader box in all light/dark system modes */
+        [data-testid="stFileUploader"] section p, 
+        [data-testid="stFileUploader"] section span, 
+        [data-testid="stFileUploader"] section small {
+            color: #E0E0E0 !important;
+            font-weight: 400 !important;
+        }
+
+        /* Force high contrast text and label visibility inside sidebar widgets */
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] label p,
+        [data-testid="stSidebar"] .stMarkdown p,
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3,
+        [data-testid="stSidebar"] h4 {
+            color: #FFFFFF !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.4rem !important;
+            display: inline-block;
         }
 
         /* Primary Button Styling */
@@ -139,8 +193,8 @@ def inject_premium_styles():
             margin-bottom: 1rem;
         }
         .song-card {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(128, 128, 128, 0.05);
+            border: 1px solid rgba(128, 128, 128, 0.1);
             padding: 0.8rem;
             border-radius: 0.8rem;
             display: flex;
@@ -149,8 +203,8 @@ def inject_premium_styles():
             transition: all 0.2s ease;
         }
         .song-card:hover {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(127, 0, 255, 0.2);
+            background: rgba(128, 128, 128, 0.1);
+            border-color: rgba(255, 0, 127, 0.3);
             transform: translateX(4px);
         }
         .song-index {
@@ -173,14 +227,15 @@ def inject_premium_styles():
         .song-title {
             font-weight: 600;
             font-size: 0.9rem;
-            color: #fff;
+            color: var(--text-color, inherit);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .song-artist {
             font-size: 0.78rem;
-            color: #888;
+            color: var(--text-color, inherit);
+            opacity: 0.7;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -189,8 +244,8 @@ def inject_premium_styles():
             gap: 0.4rem;
         }
         .song-artist-badge {
-            background: rgba(127, 0, 255, 0.12);
-            color: #b886ff;
+            background: rgba(255, 0, 127, 0.15);
+            color: #ff85be;
             padding: 0.05rem 0.35rem;
             border-radius: 0.3rem;
             font-size: 0.65rem;
@@ -256,20 +311,34 @@ def main():
 
     # -- Settings --
     st.sidebar.subheader("Output Settings")
-    num_pages = st.sidebar.number_input("Number of Pages (2 cards per page)", min_value=1, value=1, step=1)
     
     # Suggest a default title based on playlist if available
     default_title = "Music Bingo"
     if 'playlist_name' in st.session_state and st.session_state['playlist_name']:
-        default_title = f"Music Bingo - {st.session_state['playlist_name']}"
+        default_title = f"{st.session_state['playlist_name']}"
     elif "Local" in source_type and uploaded_file:
         # Simple extraction from filename
         fname = uploaded_file.name
         if "." in fname:
             fname = ".".join(fname.split(".")[:-1])
-        default_title = f"Music Bingo - {fname}"
+        default_title = f"{fname}"
 
-    game_title = st.sidebar.text_input("Game Title", value=default_title)
+    playlist_name = st.sidebar.text_input("Playlist Name", value=default_title)
+    title_suffix = st.sidebar.text_input("Title Suffix", value="Round 1")
+    
+    page_size = st.sidebar.selectbox("Page Size", ["A3", "A4", "A5", "Letter", "Legal"], index=1)
+    
+    cards_options = ["1", "2", "4"]
+    if page_size == "A3":
+        cards_options = ["1", "2", "4", "6", "8"]
+    elif page_size == "A5":
+        cards_options = ["1", "2"]
+        
+    cards_per_sheet_str = st.sidebar.selectbox("Cards per Sheet", cards_options, index=1 if len(cards_options) > 1 else 0)
+    cards_per_sheet = int(cards_per_sheet_str)
+    
+    num_cards = st.sidebar.number_input("Number of Cards", min_value=1, value=10, step=1)
+
     include_artist = st.sidebar.checkbox("Include Artist Names", value=True)
     jackpot = st.sidebar.checkbox("Jackpot Mode (No Free Space)", value=False)
 
@@ -280,27 +349,15 @@ def main():
             song_cards_html = '<div class="song-grid">'
             for idx, s in enumerate(playlist_data[:12]):
                 artist_badge = f'<span class="song-artist-badge">{s["artist"]}</span>' if s["artist"] else ''
-                song_cards_html += f"""
-                    <div class="song-card">
-                        <div class="song-index">{idx + 1}</div>
-                        <div class="song-info">
-                            <div class="song-title" title="{s['title']}">{s['title']}</div>
-                            <div class="song-artist">{s['artist'] if s['artist'] else 'No Artist'} {artist_badge}</div>
-                        </div>
-                    </div>
-                """
+                song_cards_html += f'<div class="song-card"><div class="song-index">{idx + 1}</div><div class="song-info"><div class="song-title" title="{s["title"]}">{s["title"]}</div><div class="song-artist">{s["artist"] if s["artist"] else "No Artist"} {artist_badge}</div></div></div>'
             song_cards_html += '</div>'
             st.markdown(song_cards_html, unsafe_allow_html=True)
-            
             if len(playlist_data) > 12:
                 st.markdown(f"<div style='text-align: center; color: #888; margin-top: 5px; margin-bottom: 10px; font-weight: 500;'>... and {len(playlist_data)-12} more songs in the playlist.</div>", unsafe_allow_html=True)
 
         generate_btn = st.button("Generate Bingo Sheets", type="primary")
         
         if generate_btn:
-            # Generate Logic
-            num_cards = num_pages * 2
-            
             generator = BingoGenerator()
             renderer = PDFRenderer()
             
@@ -310,9 +367,18 @@ def main():
                     cards = generator.generate_cards(playlist_data, num_cards, jackpot=jackpot)
                     
                     # 2. Render PDF
-                    pdf_buffer = renderer.render_to_bytes(cards, title=game_title, include_artist=include_artist, jackpot=jackpot)
+                    pdf_buffer = renderer.render_to_bytes(
+                        cards, 
+                        title=playlist_name,
+                        suffix=title_suffix,
+                        page_size_name=page_size,
+                        cards_per_sheet=cards_per_sheet,
+                        include_artist=include_artist, 
+                        jackpot=jackpot
+                    )
                     
                     # 3. Success & Download
+                    num_pages = (num_cards + cards_per_sheet - 1) // cards_per_sheet
                     st.success(f"Successfully generated {num_cards} cards on {num_pages} pages!")
                     
                     st.download_button(
