@@ -7,14 +7,25 @@ class BingoGenerator:
         songs: list of {'title': str, 'artist': str}
         Returns: list of 5x5 matrices (lists of lists of dicts).
         """
+        # Deduplicate songs based on title and artist (case-insensitive)
+        unique_songs = []
+        seen = set()
+        for s in songs:
+            title_clean = s['title'].strip().lower()
+            artist_clean = s['artist'].strip().lower() if s['artist'] else ""
+            identifier = (title_clean, artist_clean)
+            if identifier not in seen:
+                seen.add(identifier)
+                unique_songs.append(s)
+
         min_required = 25 if jackpot else 24
-        if len(songs) < min_required:
-            raise ValueError(f"Not enough unique songs! Need at least {min_required}, but got {len(songs)}.")
+        if len(unique_songs) < min_required:
+            raise ValueError(f"Not enough unique songs! Need at least {min_required}, but only got {len(unique_songs)}.")
 
         cards = []
         for _ in range(num_cards):
             # 1. Select unique songs
-            selection = random.sample(songs, min_required)
+            selection = random.sample(unique_songs, min_required)
             
             # 2. Shuffle the selection for grid placement
             random.shuffle(selection)

@@ -7,22 +7,22 @@ from reportlab.lib.enums import TA_CENTER
 import io
 
 class PDFRenderer:
-    def render_to_bytes(self, cards, title="Music Bingo", include_artist=True, jackpot=False):
+    def render_to_bytes(self, cards, title="Music Bingo", suffix="", page_size_name="A4", cards_per_sheet=2, include_artist=True, jackpot=False):
         """
         Renders cards to a PDF in memory.
-        cards: list of 5x5 grids.
-        title: Title to display on each sheet.
-        include_artist: Whether to print artist name below title.
-        jackpot: Whether Jackpot mode is active (no FREE SPACE in center).
-        Returns: BytesIO object containing PDF data.
         """
+        import reportlab.lib.pagesizes as pagesizes
+        
         buffer = io.BytesIO()
+        
+        # Resolve page size dynamically
+        page_size_tuple = getattr(pagesizes, page_size_name, A4)
         
         # Margins: 0.5cm all around (closer to edge)
         margin = 0.5 * cm
         doc = SimpleDocTemplate(
             buffer, 
-            pagesize=A4,
+            pagesize=page_size_tuple,
             rightMargin=margin, leftMargin=margin,
             topMargin=margin, bottomMargin=margin
         )
@@ -51,12 +51,16 @@ class PDFRenderer:
         )
         
         # Dimensions
-        page_width = A4[0] - 2*margin
-        # Usable width approx 20cm
-        
+        page_width = page_size_tuple[0] - 2*margin
         col_width = page_width / 5
-        # Increase row height slightly since we have more space
-        row_height = 2.4 * cm 
+        
+        usable_page_height = page_size_tuple[1] - 2*margin
+        card_spacer = 0.5 * cm
+        total_spacer_height = (cards_per_sheet - 1) * card_spacer if cards_per_sheet > 1 else 0
+        usable_height_per_card = (usable_page_height - total_spacer_height) / cards_per_sheet
+        
+        grid_height = usable_height_per_card - 2.0 * cm 
+        row_height = grid_height / 5
         
         # Grid Style
         grid_style_list = [
@@ -87,7 +91,10 @@ class PDFRenderer:
         for i, card in enumerate(cards):
             # 1. Title Box
             # Wrap title in a Table to get the box effect
-            title_p = Paragraph(title, title_text_style)
+            display_title = title
+            if suffix:
+                display_title = f"{title} - {suffix}"
+            title_p = Paragraph(display_title, title_text_style)
             title_table = Table([[title_p]], colWidths=[page_width])
             title_table.setStyle(title_box_style)
             elements.append(title_table)
@@ -137,22 +144,12 @@ class PDFRenderer:
             elements.append(t)
             
             # 4. Spacing or Page Break
-            if (i + 1) % 2 == 0:
-                # Even card, end of page
+            if (i + 1) % cards_per_sheet == 0:
+                # End of page
                 elements.append(PageBreak())
             else:
-                # Odd card, add space for next card
-                # We need enough space to separate them visually, 
-                # but ensure the second one fits.
-                # Total height used so far: 
-                # Margin (0.5) + TitleTable (~1.5) + Spacer (0.3) + Grid (12) = ~14.3cm
-                # Page usable height = 28.7cm
-                # We have ~14.4cm left.
-                # Spacer of 1cm is safe.
-                elements.append(Spacer(1, 1.0*cm))
-                
-                # Optional: Cut line
-                # elements.append(Paragraph("- - - - - Cut Here - - - - -", centered_style))
+                # Add space for next card
+                elements.append(Spacer(1, card_spacer))
 
         doc.build(elements)
         buffer.seek(0)

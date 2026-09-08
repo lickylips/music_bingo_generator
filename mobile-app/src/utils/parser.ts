@@ -5,6 +5,14 @@ export interface ParsedSong {
   artist: string;
 }
 
+export const sanitizeTitle = (title: string): string => {
+  const pattern = /\s*[\(\[][^\]\)]*(?:remaster|version|mix|edit|video|audio|lyrics|original|clip|live)[^\]\)]*[\)\]]/gi;
+  let cleaned = title.replace(pattern, '');
+  cleaned = cleaned.replace(/\s*[\(\[]\s*[\)\]]/g, '');
+  return cleaned.trim();
+};
+
+
 /**
  * Parses content of an M3U file.
  * Supports #EXTINF for metadata or falls back to filenames.
@@ -27,10 +35,10 @@ export const parseM3U = (fileContent: string): ParsedSong[] => {
             const artist = parts[0].trim();
             const title = parts.slice(1).join(" - ").trim();
             if (title) {
-              songs.push({ title, artist });
+              songs.push({ title: sanitizeTitle(title), artist });
             }
           } else {
-            songs.push({ title: info.trim(), artist: "" });
+            songs.push({ title: sanitizeTitle(info.trim()), artist: "" });
           }
         }
       } catch (e) {
@@ -55,7 +63,7 @@ export const parseM3U = (fileContent: string): ParsedSong[] => {
       if (filename) {
         // Remove extension
         const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
-        songs.push({ title: nameWithoutExt, artist: "" });
+        songs.push({ title: sanitizeTitle(nameWithoutExt), artist: "" });
       }
     }
   }
@@ -89,9 +97,9 @@ export const parseWPL = (fileContent: string): ParsedSong[] => {
           const parts = nameWithoutExt.split(" - ");
           const artist = parts[0].trim();
           const title = parts.slice(1).join(" - ").trim();
-          songs.push({ title, artist });
+          songs.push({ title: sanitizeTitle(title), artist });
         } else {
-          songs.push({ title: nameWithoutExt.trim(), artist: "" });
+          songs.push({ title: sanitizeTitle(nameWithoutExt.trim()), artist: "" });
         }
       }
     }

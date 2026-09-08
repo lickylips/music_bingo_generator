@@ -2,6 +2,16 @@ import re
 from ytmusicapi import YTMusic
 
 class PlaylistParser:
+    def sanitize_title(self, title):
+        """
+        Cleans up song titles by removing parenthesized/bracketed version descriptors.
+        """
+        pattern = r'\s*[\(\[][^\]\)]*(?:remaster|version|mix|edit|video|audio|lyrics|original|clip|live)[^\]\)]*[\)\]]'
+        cleaned = re.sub(pattern, '', title, flags=re.IGNORECASE)
+        cleaned = re.sub(r'\s*[\(\[]\s*[\)\]]', '', cleaned)
+        return cleaned.strip()
+
+
     def parse_m3u(self, file_content_str):
         """
         Parses content of an M3U file (passed as string).
@@ -27,7 +37,7 @@ class PlaylistParser:
                         title = info.strip()
                     
                     if title:
-                        songs.append({"title": title, "artist": artist})
+                        songs.append({"title": self.sanitize_title(title), "artist": artist})
                 except IndexError:
                     continue
 
@@ -47,7 +57,7 @@ class PlaylistParser:
                     filename = ".".join(filename.split(".")[:-1])
                 
                 if filename:
-                    songs.append({"title": filename, "artist": ""})
+                    songs.append({"title": self.sanitize_title(filename), "artist": ""})
         
         return songs
 
@@ -71,7 +81,7 @@ class PlaylistParser:
                 title = track.get('title', 'Unknown')
                 artists_list = track.get('artists', [])
                 artist = ", ".join([a['name'] for a in artists_list]) if artists_list else ""
-                songs.append({'title': title, 'artist': artist})
+                songs.append({'title': self.sanitize_title(title), 'artist': artist})
                 
         except Exception as e:
             # Propagate error or return empty? Let's print for now.
@@ -113,7 +123,7 @@ class PlaylistParser:
                         artist = ""
                         title = filename.strip()
                         
-                    songs.append({"title": title, "artist": artist})
+                    songs.append({"title": self.sanitize_title(title), "artist": artist})
         except Exception as e:
             print(f"Error parsing WPL playlist: {e}")
             
