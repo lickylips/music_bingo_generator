@@ -341,6 +341,7 @@ def main():
 
     include_artist = st.sidebar.checkbox("Include Artist Names", value=True)
     jackpot = st.sidebar.checkbox("Jackpot Mode (No Free Space)", value=False)
+    include_cover_page = st.sidebar.checkbox("Include Tracklist Cover Page", value=True)
 
     # -- Main Area --
     if playlist_data:
@@ -374,7 +375,8 @@ def main():
                         page_size_name=page_size,
                         cards_per_sheet=cards_per_sheet,
                         include_artist=include_artist, 
-                        jackpot=jackpot
+                        jackpot=jackpot,
+                        track_list=playlist_data if include_cover_page else None
                     )
                     
                     # 3. Success & Download
